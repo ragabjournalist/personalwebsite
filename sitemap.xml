@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemap.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://ahmedragab.net/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ahmedragab.net/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ahmedragab.net/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ahmedragab.net/"/>
+  </url>
+  <url>
+    <loc>https://ahmedragab.net/about.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ahmedragab.net/about.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ahmedragab.net/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ahmedragab.net/"/>
+  </url>
+  <url>
+    <loc>https://ahmedragab.net/investigations.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ahmedragab.net/investigations.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ahmedragab.net/en/investigations.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ahmedragab.net/"/>
+  </url>
+  <url>
+    <loc>https://ahmedragab.net/podcasts.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ahmedragab.net/podcasts.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ahmedragab.net/en/podcasts.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ahmedragab.net/"/>
+  </url>
+  <url>
+    <loc>https://ahmedragab.net/books.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ahmedragab.net/books.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ahmedragab.net/en/books.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ahmedragab.net/"/>
+  </url>
+  <url>
+    <loc>https://ahmedragab.net/contact.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ahmedragab.net/contact.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ahmedragab.net/en/contact.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ahmedragab.net/"/>
+  </url>
+  <url>
+    <loc>https://ahmedragab.net/en/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ahmedragab.net/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ahmedragab.net/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ahmedragab.net/"/>
+  </url>
+  <url>
+    <loc>https://ahmedragab.net/en/about.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ahmedragab.net/about.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ahmedragab.net/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ahmedragab.net/"/>
+  </url>
+  <url>
+    <loc>https://ahmedragab.net/en/investigations.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ahmedragab.net/investigations.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ahmedragab.net/en/investigations.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ahmedragab.net/"/>
+  </url>
+  <url>
+    <loc>https://ahmedragab.net/en/podcasts.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ahmedragab.net/podcasts.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ahmedragab.net/en/podcasts.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ahmedragab.net/"/>
+  </url>
+  <url>
+    <loc>https://ahmedragab.net/en/books.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ahmedragab.net/books.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ahmedragab.net/en/books.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ahmedragab.net/"/>
+  </url>
+  <url>
+    <loc>https://ahmedragab.net/en/contact.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ahmedragab.net/contact.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ahmedragab.net/en/contact.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ahmedragab.net/"/>
+  </url>
+</urlset>
