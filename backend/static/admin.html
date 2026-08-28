@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة التحكم — أحمد رجب</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Reem+Kufi:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --accent:#a01818; --bg:#f7f5f0; --ink:#1a1a1a; --muted:#666;
+      --line:#dcd7cc; --card:#fff; --danger:#c0392b; --ok:#2b8a3e;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.6}
+    header{background:#1a1a1a;color:#fff;padding:1.25rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
+    header .brand{font-family:"Reem Kufi";font-size:1.4rem;font-weight:700}
+    header .actions{display:flex;gap:.75rem}
+    .container{max-width:1400px;margin:0 auto;padding:2rem}
+    h1{font-family:"Reem Kufi";font-size:2rem;font-weight:700;margin-bottom:.5rem}
+    h2{font-family:"Reem Kufi";font-size:1.5rem;font-weight:600;margin:2rem 0 1rem}
+    h3{font-size:1.1rem;font-weight:600;margin-bottom:.5rem}
+    .lede{color:var(--muted);margin-bottom:2rem}
+    .btn{background:var(--ink);color:#fff;border:none;padding:.65rem 1.4rem;font-family:inherit;font-size:.95rem;font-weight:500;cursor:pointer;border-radius:2px;text-decoration:none;display:inline-block;transition:opacity .2s}
+    .btn:hover{opacity:.85}
+    .btn.primary{background:var(--accent)}
+    .btn.ghost{background:transparent;color:#fff;border:1px solid #444}
+    .btn.small{padding:.35rem .8rem;font-size:.85rem}
+    .btn.danger{background:var(--danger)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.5rem}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:1.25rem;display:flex;flex-direction:column;gap:.75rem;transition:box-shadow .2s}
+    .card:hover{box-shadow:0 4px 16px rgba(0,0,0,.06)}
+    .card .thumb{width:100%;height:180px;background:#eee no-repeat center/cover;border-radius:2px}
+    .card .meta{color:var(--muted);font-size:.85rem}
+    .card .title{font-family:"Reem Kufi";font-size:1.2rem;font-weight:600;line-height:1.35}
+    .card .card-actions{display:flex;gap:.5rem;margin-top:auto;padding-top:.75rem;border-top:1px solid var(--line)}
+    .badge{display:inline-block;padding:.2rem .6rem;background:#eee;font-size:.75rem;border-radius:2px}
+    .badge.pub{background:#e8f5e9;color:var(--ok)}
+    .badge.draft{background:#fce4ec;color:var(--danger)}
+
+    /* Modal / editor */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-start;justify-content:center;z-index:1000;padding:2rem;overflow-y:auto}
+    .modal-backdrop.open{display:flex}
+    .modal{background:var(--card);width:100%;max-width:900px;border-radius:6px;padding:2rem;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+    .modal h2{margin-top:0}
+    form{display:flex;flex-direction:column;gap:1rem}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    label{display:block;font-size:.85rem;font-weight:600;margin-bottom:.35rem;color:var(--muted)}
+    input,textarea,select{width:100%;padding:.65rem;border:1px solid var(--line);border-radius:2px;font-family:inherit;font-size:.95rem;background:#fafaf7;color:var(--ink)}
+    textarea{min-height:200px;line-height:1.8;resize:vertical}
+    textarea.large{min-height:400px}
+    input:focus,textarea:focus,select:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:var(--accent)}
+    .lang-tabs{display:flex;gap:.5rem;margin-bottom:1rem;border-bottom:2px solid var(--line)}
+    .lang-tab{padding:.65rem 1.25rem;background:none;border:none;font-family:inherit;font-size:1rem;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;color:var(--muted);font-weight:500}
+    .lang-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+    .modal-actions{display:flex;justify-content:space-between;gap:1rem;padding-top:1rem;border-top:1px solid var(--line);margin-top:1rem}
+    .modal-actions .end{display:flex;gap:.5rem}
+
+    /* Gallery editor */
+    .gallery-list{display:flex;flex-direction:column;gap:.75rem}
+    .gallery-item{display:flex;gap:.75rem;align-items:center;padding:.75rem;border:1px solid var(--line);border-radius:2px;background:#fafaf7}
+    .gallery-item img{width:80px;height:80px;object-fit:cover;border-radius:2px}
+    .gallery-item .info{flex:1}
+    .gallery-item .info input{margin-bottom:.35rem}
+    .upload-area{border:2px dashed var(--line);border-radius:4px;padding:1.5rem;text-align:center;cursor:pointer;transition:border-color .2s,background .2s}
+    .upload-area:hover{border-color:var(--accent);background:#faf6f6}
+    .upload-area input{display:none}
+    .hero-preview{position:relative;display:inline-block;max-width:300px}
+    .hero-preview img{max-width:100%;border-radius:2px;border:1px solid var(--line)}
+    .hero-preview .remove{position:absolute;top:.5rem;left:.5rem;background:#000;color:#fff;border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:1rem;line-height:1}
+    .empty-state{text-align:center;padding:4rem 2rem;color:var(--muted)}
+    .empty-state h3{font-family:"Reem Kufi";font-size:1.5rem;margin-bottom:.5rem;color:var(--ink)}
+    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:.85rem 1.5rem;border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,.2);opacity:0;transition:opacity .3s;z-index:2000;pointer-events:none}
+    .toast.show{opacity:1}
+    .toast.error{background:var(--danger)}
+    .toast.success{background:var(--ok)}
+    .spinner{display:inline-block;width:16px;height:16px;border:2px solid #fff3;border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;vertical-align:middle;margin-inline-end:.5rem}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .helper{font-size:.8rem;color:var(--muted);margin-top:.35rem}
+    @media (max-width:640px){
+      .container{padding:1rem}
+      header{padding:1rem}
+      .row{grid-template-columns:1fr}
+      .modal{padding:1.25rem}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand">لوحة التحكم — التحقيقات</div>
+  <div class="actions">
+    <a href="/" class="btn ghost small" target="_blank">API</a>
+    <button class="btn primary" onclick="openEditor()">+ تحقيق جديد</button>
+  </div>
+</header>
+
+<main class="container">
+  <h1>التحقيقات</h1>
+  <p class="lede">أضِف، عدّل، أو احذف التحقيقات. يمكنك كتابة العنوان والنص بالعربي والإنجليزي معاً.</p>
+  <div id="grid" class="grid"></div>
+  <div id="empty" class="empty-state" style="display:none">
+    <h3>لا توجد تحقيقات بعد</h3>
+    <p>ابدأ بإضافة أول تحقيق.</p>
+  </div>
+</main>
+
+<!-- Editor Modal -->
+<div id="modal" class="modal-backdrop">
+  <div class="modal">
+    <h2 id="modal-title">تحقيق جديد</h2>
+    <form id="form" onsubmit="return save(event)">
+      <input type="hidden" id="f-id" />
+
+      <div class="row">
+        <div>
+          <label>السنة</label>
+          <input type="number" id="f-year" min="1990" max="2100" required />
+        </div>
+        <div>
+          <label>التاريخ (اختياري)</label>
+          <input type="date" id="f-date" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>slug (اختياري — يُولَّد أوتوماتيك)</label>
+          <input type="text" id="f-slug" placeholder="regeni-2016" />
+        </div>
+        <div>
+          <label>ترتيب العرض</label>
+          <input type="number" id="f-order" value="0" />
+          <div class="helper">الأعلى يظهر أولاً</div>
+        </div>
+      </div>
+
+      <div>
+        <label>رابط المصدر الأصلي</label>
+        <input type="url" id="f-source" placeholder="https://www.almasryalyoum.com/..." />
+      </div>
+
+      <div class="lang-tabs">
+        <button type="button" class="lang-tab active" onclick="switchTab(this,'ar')">العربية</button>
+        <button type="button" class="lang-tab" onclick="switchTab(this,'en')">English</button>
+      </div>
+
+      <div id="tab-ar" class="tab-content active">
+        <div style="margin-bottom:1rem">
+          <label>العنوان (عربي)</label>
+          <input type="text" id="f-title-ar" required />
+        </div>
+        <div style="margin-bottom:1rem">
+          <label>الجهة الناشرة (عربي)</label>
+          <input type="text" id="f-pub-ar" placeholder="المصري اليوم · تحقيق مطوّل" />
+        </div>
+        <div>
+          <label>النص الكامل (عربي)</label>
+          <textarea id="f-body-ar" class="large" placeholder="افصل الفقرات بسطر فارغ..."></textarea>
+          <div class="helper">افصل الفقرات بسطر فارغ. يمكنك اللصق مباشرة.</div>
+        </div>
+      </div>
+
+      <div id="tab-en" class="tab-content">
+        <div style="margin-bottom:1rem;padding:1rem;background:#faf6f6;border:1px solid #e5dfd3;border-radius:2px;display:flex;justify-content:space-between;align-items:center;gap:1rem">
+          <div style="font-size:.9rem;color:#666">ترجمة تلقائية من العربي للإنجليزي (تستخدم نموذج Perplexity)</div>
+          <button type="button" class="btn primary small" id="translate-btn" onclick="translateFromArabic()">ترجم من العربي →</button>
+        </div>
+        <div style="margin-bottom:1rem">
+          <label>Title (English)</label>
+          <input type="text" id="f-title-en" dir="ltr" />
+        </div>
+        <div style="margin-bottom:1rem">
+          <label>Publication (English)</label>
+          <input type="text" id="f-pub-en" dir="ltr" placeholder="Al-Masry Al-Youm · Long-form investigation" />
+        </div>
+        <div>
+          <label>Full text (English)</label>
+          <textarea id="f-body-en" class="large" dir="ltr" placeholder="Separate paragraphs with a blank line..."></textarea>
+        </div>
+      </div>
+
+      <div>
+        <label>الصورة الرئيسية</label>
+        <div id="hero-preview-wrap"></div>
+        <label for="hero-upload" class="upload-area" id="hero-upload-area">
+          <div>📷 اضغط لرفع صورة رئيسية</div>
+          <input type="file" id="hero-upload" accept="image/*" onchange="uploadHero(this)" />
+        </label>
+        <input type="hidden" id="f-hero" />
+      </div>
+
+      <div>
+        <label>معرض الصور (اختياري)</label>
+        <div id="gallery-list" class="gallery-list"></div>
+        <label for="gallery-upload" class="upload-area" style="margin-top:.75rem">
+          <div>+ إضافة صورة للمعرض</div>
+          <input type="file" id="gallery-upload" accept="image/*" onchange="uploadGallery(this)" />
+        </label>
+      </div>
+
+      <div>
+        <label>
+          <input type="checkbox" id="f-published" checked style="width:auto;margin-inline-end:.5rem" />
+          منشور (يظهر في الموقع)
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn danger" id="delete-btn" onclick="deleteInv()" style="display:none">حذف</button>
+        <div class="end" style="margin-inline-start:auto">
+          <button type="button" class="btn ghost" onclick="closeEditor()" style="background:#eee;color:#333">إلغاء</button>
+          <button type="submit" class="btn primary" id="save-btn">حفظ</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+let items = [];
+let editing = null; // full investigation object being edited
+
+async function api(path, opts={}) {
+  const r = await fetch(path, {credentials:'same-origin', ...opts, headers:{'Content-Type':'application/json', ...(opts.headers||{})}});
+  if (!r.ok) throw new Error(`${r.status}: ${await r.text()}`);
+  return r.json();
+}
+
+async function load() {
+  try {
+    items = await api('/admin/api/investigations');
+    render();
+  } catch(e) {
+    toast('فشل تحميل التحقيقات: ' + e.message, 'error');
+  }
+}
+
+function render() {
+  const grid = document.getElementById('grid');
+  const empty = document.getElementById('empty');
+  if (items.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  grid.innerHTML = items.map(i => `
+    <article class="card">
+      <div class="thumb" style="background-image:url('${i.hero_image||''}')"></div>
+      <div class="meta">${i.year||''} · ${i.publication_ar||i.publication_en||''}</div>
+      <div class="title">${escapeHtml(i.title_ar || i.title_en || '(بدون عنوان)')}</div>
+      ${i.published ? '<span class="badge pub">منشور</span>' : '<span class="badge draft">مسودة</span>'}
+      <div class="card-actions">
+        <button class="btn small" onclick="openEditor(${i.id})">تعديل</button>
+      </div>
+    </article>
+  `).join('');
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function openEditor(id) {
+  editing = null;
+  const form = document.getElementById('form');
+  form.reset();
+  document.getElementById('f-id').value = '';
+  document.getElementById('f-hero').value = '';
+  document.getElementById('hero-preview-wrap').innerHTML = '';
+  document.getElementById('gallery-list').innerHTML = '';
+  document.getElementById('delete-btn').style.display = 'none';
+  document.getElementById('modal-title').textContent = 'تحقيق جديد';
+  document.getElementById('f-year').value = new Date().getFullYear();
+  document.getElementById('f-published').checked = true;
+
+  if (id) {
+    try {
+      editing = await api(`/admin/api/investigations/${id}`);
+      fillForm(editing);
+      document.getElementById('delete-btn').style.display = 'inline-block';
+      document.getElementById('modal-title').textContent = 'تعديل تحقيق';
+    } catch(e) { toast('فشل التحميل', 'error'); return; }
+  }
+  document.getElementById('modal').classList.add('open');
+}
+
+function fillForm(inv) {
+  document.getElementById('f-id').value = inv.id;
+  document.getElementById('f-slug').value = inv.slug || '';
+  document.getElementById('f-year').value = inv.year || '';
+  document.getElementById('f-date').value = inv.date || '';
+  document.getElementById('f-order').value = inv.sort_order || 0;
+  document.getElementById('f-source').value = inv.source_url || '';
+  document.getElementById('f-title-ar').value = inv.title_ar || '';
+  document.getElementById('f-pub-ar').value = inv.publication_ar || '';
+  document.getElementById('f-body-ar').value = inv.body_ar || '';
+  document.getElementById('f-title-en').value = inv.title_en || '';
+  document.getElementById('f-pub-en').value = inv.publication_en || '';
+  document.getElementById('f-body-en').value = inv.body_en || '';
+  document.getElementById('f-hero').value = inv.hero_image || '';
+  document.getElementById('f-published').checked = !!inv.published;
+  renderHero(inv.hero_image);
+  renderGallery(inv.gallery || []);
+}
+
+function renderHero(url) {
+  const wrap = document.getElementById('hero-preview-wrap');
+  const area = document.getElementById('hero-upload-area');
+  if (url) {
+    wrap.innerHTML = `<div class="hero-preview"><img src="${url}" /><button type="button" class="remove" onclick="clearHero()">×</button></div>`;
+    area.style.display = 'none';
+  } else {
+    wrap.innerHTML = '';
+    area.style.display = 'block';
+  }
+}
+
+function clearHero() {
+  document.getElementById('f-hero').value = '';
+  renderHero('');
+}
+
+function renderGallery(items) {
+  const list = document.getElementById('gallery-list');
+  list.innerHTML = items.map((g,i) => `
+    <div class="gallery-item" data-idx="${i}">
+      <img src="${g.url}" />
+      <div class="info">
+        <input type="text" placeholder="Caption (عربي)" value="${escapeHtml(g.caption_ar||'')}" onchange="galleryUpdate(${i},'caption_ar',this.value)" />
+        <input type="text" placeholder="Caption (English)" dir="ltr" value="${escapeHtml(g.caption_en||'')}" onchange="galleryUpdate(${i},'caption_en',this.value)" />
+      </div>
+      <button type="button" class="btn small danger" onclick="galleryRemove(${i})">حذف</button>
+    </div>
+  `).join('');
+  window.__gallery = items;
+}
+
+function galleryUpdate(idx, field, val) {
+  window.__gallery[idx][field] = val;
+}
+function galleryRemove(idx) {
+  window.__gallery.splice(idx,1);
+  renderGallery(window.__gallery);
+}
+
+async function uploadHero(input) {
+  const f = input.files[0]; if (!f) return;
+  const url = await doUpload(f);
+  if (url) { document.getElementById('f-hero').value = url; renderHero(url); }
+  input.value = '';
+}
+async function uploadGallery(input) {
+  const f = input.files[0]; if (!f) return;
+  const url = await doUpload(f);
+  if (url) {
+    window.__gallery = window.__gallery || [];
+    window.__gallery.push({url, caption_ar:'', caption_en:''});
+    renderGallery(window.__gallery);
+  }
+  input.value = '';
+}
+
+async function doUpload(file) {
+  const fd = new FormData();
+  fd.append('file', file);
+  toast('جاري الرفع...', '');
+  try {
+    const r = await fetch('/admin/api/upload', {method:'POST', body:fd, credentials:'same-origin'});
+    if (!r.ok) throw new Error(await r.text());
+    const j = await r.json();
+    toast('تم الرفع', 'success');
+    return j.url;
+  } catch(e) {
+    toast('فشل الرفع: ' + e.message, 'error');
+    return null;
+  }
+}
+
+function switchTab(btn, lang) {
+  document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + lang).classList.add('active');
+}
+
+function closeEditor() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+async function save(e) {
+  e.preventDefault();
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>حفظ...';
+  const id = document.getElementById('f-id').value;
+  const payload = {
+    slug: document.getElementById('f-slug').value.trim() || undefined,
+    year: parseInt(document.getElementById('f-year').value),
+    date: document.getElementById('f-date').value || undefined,
+    sort_order: parseInt(document.getElementById('f-order').value || 0),
+    source_url: document.getElementById('f-source').value.trim() || undefined,
+    title_ar: document.getElementById('f-title-ar').value.trim(),
+    publication_ar: document.getElementById('f-pub-ar').value.trim() || undefined,
+    body_ar: document.getElementById('f-body-ar').value,
+    title_en: document.getElementById('f-title-en').value.trim() || undefined,
+    publication_en: document.getElementById('f-pub-en').value.trim() || undefined,
+    body_en: document.getElementById('f-body-en').value,
+    hero_image: document.getElementById('f-hero').value.trim() || undefined,
+    published: document.getElementById('f-published').checked,
+    gallery: window.__gallery || [],
+  };
+  try {
+    if (id) await api(`/admin/api/investigations/${id}`, {method:'PUT', body: JSON.stringify(payload)});
+    else    await api('/admin/api/investigations', {method:'POST', body: JSON.stringify(payload)});
+    toast('تم الحفظ', 'success');
+    closeEditor();
+    await load();
+  } catch(e) {
+    toast('فشل الحفظ: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'حفظ';
+  }
+  return false;
+}
+
+async function translateFromArabic() {
+  const titleAr = document.getElementById('f-title-ar').value.trim();
+  const bodyAr  = document.getElementById('f-body-ar').value.trim();
+  const pubAr   = document.getElementById('f-pub-ar').value.trim();
+  if (!titleAr && !bodyAr) {
+    toast('اكتب النص العربي أولاً', 'error');
+    return;
+  }
+  const enHasContent = document.getElementById('f-title-en').value || document.getElementById('f-body-en').value;
+  if (enHasContent && !confirm('هناك محتوى إنجليزي موجود. هل تريد استبداله؟')) return;
+
+  const btn = document.getElementById('translate-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>جاري الترجمة...';
+  try {
+    const r = await fetch('/admin/api/translate', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({title_ar: titleAr, publication_ar: pubAr, body_ar: bodyAr}),
+    });
+    if (!r.ok) throw new Error(await r.text());
+    const j = await r.json();
+    if (j.title_en)       document.getElementById('f-title-en').value = j.title_en;
+    if (j.publication_en) document.getElementById('f-pub-en').value   = j.publication_en;
+    if (j.body_en)        document.getElementById('f-body-en').value  = j.body_en;
+    toast('تمت الترجمة', 'success');
+  } catch(e) {
+    toast('فشلت الترجمة: ' + String(e).slice(0,200), 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'ترجم من العربي →';
+  }
+}
+
+async function deleteInv() {
+  const id = document.getElementById('f-id').value;
+  if (!id) return;
+  if (!confirm('هل أنت متأكد؟ لا يمكن التراجع.')) return;
+  try {
+    await api(`/admin/api/investigations/${id}`, {method:'DELETE'});
+    toast('تم الحذف', 'success');
+    closeEditor();
+    await load();
+  } catch(e) {
+    toast('فشل الحذف', 'error');
+  }
+}
+
+function toast(msg, kind='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + kind;
+  clearTimeout(window.__tt);
+  window.__tt = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Close modal on backdrop click
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target.id === 'modal') closeEditor();
+});
+
+load();
+</script>
+</body>
+</html>

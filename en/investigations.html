@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Investigations — Ahmed Ragab</title>
+  <meta name="description" content="Selected investigative and field reporting, 2010 — 2026" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=Inter:wght@400;500;600&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body class="lang-en">
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a href="../investigations.html" class="lang-switch">AR</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="investigations.html" class="active">Investigations</a></li>
+        <li><a href="podcasts.html">Podcasts</a></li>
+        <li><a href="books.html">Books</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <a href="index.html" class="brand-mark">Ahmed Ragab</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="inv-wrap">
+      <div class="section-head">
+        <div class="eyebrow">2010 — 2026</div>
+        <h1>Investigations</h1>
+        <p class="lede">Selected investigative work between 2010 and 2026, across Al-Masry Al-Youm and Arab and European platforms. Each piece is grounded in field reporting, official records, or open-source analysis.</p>
+      </div>
+
+      <div id="inv-list" class="inv-list">
+        <div class="loading" style="text-align:center;padding:3rem;color:#666">Loading...</div>
+      </div>
+
+      <div class="cta-block">
+        <h2>Data projects and interactive sites</h2>
+        <p>Alongside published pieces, I build databases and interactive news sites — including an analytical site on Egypt's Ministry of Transport contracts (2022 — 2026), an Egyptian economy dashboard (2011 — 2025), and a mapping project for environmental impact assessments.</p>
+        <div class="hero-actions" style="justify-content:center">
+          <a href="contact.html" class="btn primary">Get in touch for commissions</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <p>Investigative journalist.</p>
+    </div>
+  </footer>
+
+  <script>
+  const API_BASE = window.location.hostname === 'localhost' || window.location.hostname.startsWith('127.')
+    ? 'http://localhost:8787'
+    : '__PORT_8787__';
+
+  async function loadInvestigations() {
+    const list = document.getElementById('inv-list');
+    try {
+      const r = await fetch(`${API_BASE}/api/investigations?lang=en`);
+      if (!r.ok) throw new Error(r.status);
+      const items = await r.json();
+      if (items.length === 0) {
+        list.innerHTML = '<div style="text-align:center;padding:3rem;color:#666">No investigations yet.</div>';
+        return;
+      }
+      list.innerHTML = items.map(i => {
+        const pub = i.publication_en || i.publication_ar || '';
+        const title = i.title_en || i.title_ar || '';
+        return `
+          <a class="inv-item" href="investigation.html?slug=${encodeURIComponent(i.slug)}">
+            <span class="year">${i.year || ''}</span>
+            <div>
+              <h3>${escapeHtml(title)}</h3>
+              <div class="pub">${escapeHtml(pub)}</div>
+            </div>
+            <span class="arrow">→</span>
+          </a>
+        `;
+      }).join('');
+    } catch(e) {
+      list.innerHTML = `<div style="text-align:center;padding:3rem;color:#a01818">Failed to load investigations. Try again later.</div>`;
+      console.error(e);
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  loadInvestigations();
+  </script>
+</body>
+</html>

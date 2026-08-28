@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>التحقيقات — أحمد رجب</title>
+  <meta name="description" content="مختارات من التحقيقات الاستقصائية والميدانية بين 2010 و2026" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a href="en/investigations.html" class="lang-switch">EN</a>
+      <ul class="nav-links">
+        <li><a href="index.html">الرئيسية</a></li>
+        <li><a href="investigations.html" class="active">التحقيقات</a></li>
+        <li><a href="podcasts.html">البودكاست</a></li>
+        <li><a href="books.html">الكتب</a></li>
+        <li><a href="about.html">السيرة</a></li>
+        <li><a href="contact.html">تواصل</a></li>
+      </ul>
+      <a href="index.html" class="brand-mark">أحمد رجب</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="inv-wrap">
+      <div class="section-head">
+        <div class="eyebrow">2010 — 2026</div>
+        <h1>التحقيقات</h1>
+        <p class="lede">مختارات من الأعمال الاستقصائية والميدانية على مدى ستة عشر عاماً، بين «المصري اليوم» ومنصات عربية وأوروبية. كل عمل مسنود بتقارير ميدانية أو وثائق رسمية أو مصادر مفتوحة.</p>
+      </div>
+
+      <div id="inv-list" class="inv-list">
+        <div class="loading" style="text-align:center;padding:3rem;color:#666">جاري التحميل...</div>
+      </div>
+
+      <div class="cta-block">
+        <h2>مشروعات بيانات ومواقع تفاعلية</h2>
+        <p>إلى جانب الأعمال المنشورة، أبني قواعد بيانات ومواقع خبرية تفاعلية — من بينها موقع تحليلي لعقود وزارة النقل المصرية (2022 — 2026)، ولوحة بيانات للاقتصاد المصري (2011 — 2025)، ومشروع خرائطي لدراسات الأثر البيئي.</p>
+        <div class="hero-actions" style="justify-content:center">
+          <a href="contact.html" class="btn primary">تواصل للمشاريع الخاصة</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <p>صحفي استقصائي.</p>
+    </div>
+  </footer>
+
+  <script>
+  const API_BASE = window.location.hostname === 'localhost' || window.location.hostname.startsWith('127.')
+    ? 'http://localhost:8787'
+    : '__PORT_8787__';
+
+  async function loadInvestigations() {
+    const list = document.getElementById('inv-list');
+    try {
+      const r = await fetch(`${API_BASE}/api/investigations?lang=ar`);
+      if (!r.ok) throw new Error(r.status);
+      const items = await r.json();
+      if (items.length === 0) {
+        list.innerHTML = '<div style="text-align:center;padding:3rem;color:#666">لا توجد تحقيقات بعد.</div>';
+        return;
+      }
+      list.innerHTML = items.map(i => {
+        const pub = i.publication_ar || '';
+        const title = i.title_ar || i.title_en || '';
+        return `
+          <a class="inv-item" href="investigation.html?slug=${encodeURIComponent(i.slug)}">
+            <span class="year">${i.year || ''}</span>
+            <div>
+              <h3>${escapeHtml(title)}</h3>
+              <div class="pub">${escapeHtml(pub)}</div>
+            </div>
+            <span class="arrow">←</span>
+          </a>
+        `;
+      }).join('');
+    } catch(e) {
+      list.innerHTML = `<div style="text-align:center;padding:3rem;color:#a01818">تعذّر تحميل التحقيقات. حاول لاحقاً.</div>`;
+      console.error(e);
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  loadInvestigations();
+  </script>
+</body>
+</html>

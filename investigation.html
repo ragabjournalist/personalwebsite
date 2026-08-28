@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تحقيق — أحمد رجب</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    .article-wrap{max-width:920px;margin:0 auto;padding:3rem 2rem 5rem}
+    .article-head{margin-bottom:2.5rem;padding-bottom:2rem;border-bottom:1px solid #e5dfd3}
+    .article-head .eyebrow{color:#a01818;font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;font-weight:600;margin-bottom:1rem}
+    .article-head h1{font-family:"Reem Kufi",sans-serif;font-size:clamp(1.75rem,3.5vw,2.75rem);line-height:1.3;margin-bottom:1rem;color:#1a1a1a}
+    .article-head .meta{color:#666;font-size:.95rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
+    .article-head .meta .sep{color:#c9c1b0}
+    .hero-media{margin:2rem 0 3rem}
+    .hero-media img{width:100%;max-height:520px;object-fit:cover;border-radius:2px;display:block}
+    .hero-media figcaption{color:#666;font-size:.85rem;margin-top:.75rem;font-style:italic}
+    .article-body{font-family:"Amiri",serif;font-size:1.25rem;line-height:2;color:#1a1a1a}
+    .article-body p{margin-bottom:1.5rem}
+    .article-body p:first-of-type::first-letter{
+      font-family:"Reem Kufi",sans-serif;font-size:3.5rem;font-weight:700;color:#a01818;
+      float:right;line-height:1;margin-inline-start:.5rem;margin-top:.3rem
+    }
+    .article-cta{margin:3rem 0;padding:2rem;background:#fff;border:1px solid #e5dfd3;border-radius:2px;text-align:center}
+    .article-cta p{color:#666;margin-bottom:1rem}
+    .gallery-section{margin:3rem 0}
+    .gallery-section h3{font-family:"Reem Kufi";font-size:1.35rem;margin-bottom:1.25rem;padding-bottom:.5rem;border-bottom:2px solid #a01818;display:inline-block}
+    .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+    .gallery-grid figure{margin:0}
+    .gallery-grid img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:2px;cursor:zoom-in;transition:opacity .2s}
+    .gallery-grid img:hover{opacity:.85}
+    .gallery-grid figcaption{color:#666;font-size:.85rem;margin-top:.5rem;font-style:italic}
+    .back-link{color:#a01818;text-decoration:none;font-weight:500;font-size:.95rem;display:inline-flex;align-items:center;gap:.5rem;margin-bottom:2rem}
+    .back-link:hover{text-decoration:underline}
+    .not-found{text-align:center;padding:5rem 2rem}
+    .not-found h2{font-family:"Reem Kufi";margin-bottom:1rem}
+    .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:1000;padding:2rem;cursor:zoom-out}
+    .lightbox.open{display:flex}
+    .lightbox img{max-width:100%;max-height:100%;object-fit:contain}
+    @media (max-width:640px){
+      .article-body{font-size:1.15rem}
+      .article-wrap{padding:2rem 1.25rem 3rem}
+    }
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a href="#" class="lang-switch" id="lang-switch">EN</a>
+      <ul class="nav-links">
+        <li><a href="index.html">الرئيسية</a></li>
+        <li><a href="investigations.html" class="active">التحقيقات</a></li>
+        <li><a href="podcasts.html">البودكاست</a></li>
+        <li><a href="books.html">الكتب</a></li>
+        <li><a href="about.html">السيرة</a></li>
+        <li><a href="contact.html">تواصل</a></li>
+      </ul>
+      <a href="index.html" class="brand-mark">أحمد رجب</a>
+    </div>
+  </nav>
+
+  <main>
+    <article class="article-wrap" id="article">
+      <div class="loading" style="text-align:center;padding:5rem;color:#666">جاري التحميل...</div>
+    </article>
+  </main>
+
+  <div class="lightbox" id="lightbox" onclick="this.classList.remove('open')"><img /></div>
+
+  <footer>
+    <div class="footer-inner">
+      <p>صحفي استقصائي.</p>
+    </div>
+  </footer>
+
+  <script>
+  const API_BASE = window.location.hostname === 'localhost' || window.location.hostname.startsWith('127.')
+    ? 'http://localhost:8787'
+    : '__PORT_8787__';
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function paragraphs(text) {
+    if (!text) return '';
+    return String(text).split(/\n{2,}/).map(p => `<p>${escapeHtml(p.trim()).replace(/\n/g,'<br>')}</p>`).join('');
+  }
+
+  async function loadInvestigation() {
+    const slug = new URLSearchParams(location.search).get('slug');
+    const wrap = document.getElementById('article');
+    if (!slug) {
+      wrap.innerHTML = '<div class="not-found"><h2>لم يُحدَّد التحقيق</h2><a class="back-link" href="investigations.html">→ العودة إلى قائمة التحقيقات</a></div>';
+      return;
+    }
+    try {
+      const r = await fetch(`${API_BASE}/api/investigations/${encodeURIComponent(slug)}`);
+      if (r.status === 404) throw new Error('not-found');
+      if (!r.ok) throw new Error(r.status);
+      const inv = await r.json();
+      document.title = (inv.title_ar || 'تحقيق') + ' — أحمد رجب';
+      document.getElementById('lang-switch').href = 'en/investigation.html?slug=' + encodeURIComponent(inv.slug);
+
+      const dateStr = inv.date || inv.year || '';
+      const pub = inv.publication_ar || '';
+      const hero = inv.hero_image
+        ? `<figure class="hero-media"><img src="${escapeHtml(inv.hero_image)}" alt="${escapeHtml(inv.title_ar||'')}" /></figure>`
+        : '';
+      const body = inv.body_ar
+        ? `<div class="article-body">${paragraphs(inv.body_ar)}</div>`
+        : `<div class="article-body"><p style="color:#888;font-style:italic;font-family:'IBM Plex Sans Arabic',sans-serif;font-size:1rem">النص الكامل متاح على الرابط الأصلي.</p></div>`;
+
+      const gallery = (inv.gallery && inv.gallery.length > 1) ? `
+        <section class="gallery-section">
+          <h3>معرض الصور</h3>
+          <div class="gallery-grid">
+            ${inv.gallery.map(g => `
+              <figure>
+                <img src="${escapeHtml(g.url)}" alt="${escapeHtml(g.caption_ar||'')}" onclick="openLightbox('${escapeHtml(g.url)}')" />
+                ${g.caption_ar ? `<figcaption>${escapeHtml(g.caption_ar)}</figcaption>` : ''}
+              </figure>
+            `).join('')}
+          </div>
+        </section>
+      ` : '';
+
+      const cta = inv.source_url ? `
+        <div class="article-cta">
+          <p>هذا التحقيق نُشر أصلاً في ${escapeHtml(pub || 'مصدره الأصلي')}.</p>
+          <a href="${escapeHtml(inv.source_url)}" target="_blank" rel="noopener" class="btn primary">اقرأ النسخة الأصلية ↗</a>
+        </div>
+      ` : '';
+
+      wrap.innerHTML = `
+        <a href="investigations.html" class="back-link">← العودة إلى قائمة التحقيقات</a>
+        <div class="article-head">
+          <div class="eyebrow">تحقيق</div>
+          <h1>${escapeHtml(inv.title_ar || '')}</h1>
+          <div class="meta">
+            ${dateStr ? `<span>${escapeHtml(dateStr)}</span>` : ''}
+            ${dateStr && pub ? '<span class="sep">·</span>' : ''}
+            ${pub ? `<span>${escapeHtml(pub)}</span>` : ''}
+          </div>
+        </div>
+        ${hero}
+        ${body}
+        ${gallery}
+        ${cta}
+      `;
+    } catch(e) {
+      if (String(e.message).includes('not-found')) {
+        wrap.innerHTML = '<div class="not-found"><h2>التحقيق غير موجود</h2><a class="back-link" href="investigations.html">← العودة إلى قائمة التحقيقات</a></div>';
+      } else {
+        wrap.innerHTML = '<div class="not-found"><h2 style="color:#a01818">تعذّر تحميل التحقيق</h2><p style="color:#666">حاول لاحقاً.</p><a class="back-link" href="investigations.html">← العودة إلى قائمة التحقيقات</a></div>';
+      }
+      console.error(e);
+    }
+  }
+
+  function openLightbox(url) {
+    const lb = document.getElementById('lightbox');
+    lb.querySelector('img').src = url;
+    lb.classList.add('open');
+  }
+
+  loadInvestigation();
+  </script>
+</body>
+</html>
