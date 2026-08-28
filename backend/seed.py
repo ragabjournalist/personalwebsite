@@ -96,5 +96,9 @@ def seed():
     conn.close()
     print("done.")
 
+def run():
+    """Alias called by app.py startup."""
+    seed()
+
 if __name__ == "__main__":
     seed()

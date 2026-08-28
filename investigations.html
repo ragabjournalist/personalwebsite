@@ -57,7 +57,7 @@
   <script>
   const API_BASE = window.location.hostname === 'localhost' || window.location.hostname.startsWith('127.')
     ? 'http://localhost:8787'
-    : '__PORT_8787__';
+    : ''; // same-origin in production
 
   async function loadInvestigations() {
     const list = document.getElementById('inv-list');

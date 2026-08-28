@@ -23,6 +23,9 @@ from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
+
+import storage as gcs_storage
 
 BASE_DIR = Path(__file__).parent
 UPLOADS_DIR = BASE_DIR / "uploads"
@@ -35,7 +38,28 @@ if ADMIN_PASS == "change-me-in-env":
     import warnings
     warnings.warn("ADMIN_PASS is using the insecure default. Set ADMIN_PASS in your environment.")
 
-app = FastAPI(title="Ahmed Ragab CMS")
+def _ensure_schema():
+    """Create tables if missing, then seed if empty."""
+    init_db()
+    with db() as c:
+        count = c.execute("SELECT COUNT(*) FROM investigations").fetchone()[0]
+    if count == 0:
+        # Seed only on truly empty DB
+        try:
+            import seed as _seed
+            _seed.run()
+            gcs_storage.upload_db_to_gcs()
+        except Exception as e:
+            print(f"[startup] seed skipped: {e}")
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    # On startup: pull DB from GCS if bucket configured
+    gcs_storage.download_db_from_gcs()
+    _ensure_schema()
+    yield
+
+app = FastAPI(title="Ahmed Ragab CMS", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -201,6 +225,7 @@ async def admin_create(request: Request, user: str = Depends(require_admin)):
                 (inv_id, g.get("url"), g.get("caption_ar"), g.get("caption_en"), i),
             )
         c.commit()
+    gcs_storage.upload_db_to_gcs()
     return get_investigation_full(inv_id)
 
 @app.put("/admin/api/investigations/{inv_id}")
@@ -248,6 +273,7 @@ async def admin_update(inv_id: int, request: Request, user: str = Depends(requir
                 (inv_id, g.get("url"), g.get("caption_ar"), g.get("caption_en"), i),
             )
         c.commit()
+    gcs_storage.upload_db_to_gcs()
     return get_investigation_full(inv_id)
 
 @app.delete("/admin/api/investigations/{inv_id}")
@@ -255,6 +281,7 @@ def admin_delete(inv_id: int, user: str = Depends(require_admin)):
     with db() as c:
         c.execute("DELETE FROM investigations WHERE id = ?", (inv_id,))
         c.commit()
+    gcs_storage.upload_db_to_gcs()
     return {"ok": True}
 
 @app.post("/admin/api/translate")
@@ -327,7 +354,9 @@ async def admin_upload(file: UploadFile = File(...), user: str = Depends(require
     dest = UPLOADS_DIR / fname
     with dest.open("wb") as f:
         shutil.copyfileobj(file.file, f)
-    return {"url": f"/uploads/{fname}", "filename": fname}
+    # Upload to GCS if configured; falls back to local URL otherwise.
+    url = gcs_storage.upload_image(str(dest), fname)
+    return {"url": url, "filename": fname}
 
 # ---------- Static ----------
 app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
@@ -338,9 +367,16 @@ def admin_page(user: str = Depends(require_admin)):
 
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
-@app.get("/")
-def root():
-    return {"status": "ok", "admin": "/admin", "api": "/api/investigations"}
+# Serve the site's static files (HTML/CSS/JS/images) from the repo root.
+# STATIC_ROOT is set by the Dockerfile to /app; locally we default to the parent dir.
+STATIC_ROOT = Path(os.environ.get("STATIC_ROOT", str(BASE_DIR.parent)))
+if STATIC_ROOT.exists():
+    # `html=True` makes /some/path/ resolve to /some/path/index.html
+    app.mount("/", StaticFiles(directory=str(STATIC_ROOT), html=True), name="site")
+else:
+    @app.get("/")
+    def root():
+        return {"status": "ok", "admin": "/admin", "api": "/api/investigations"}
 
 
 if __name__ == "__main__":
