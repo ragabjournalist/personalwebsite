@@ -829,3 +829,51 @@ footer.site-footer {
 .tip-strip-mail:hover {
   opacity: 0.65;
 }
+
+/* --- Hero collage (field photos) --- */
+.hero-collage {
+  position: relative;
+  width: 100%;
+  height: 440px;
+  max-width: 460px;
+  margin-inline-start: auto;
+}
+.hero-collage .snap {
+  position: absolute;
+  background: #fff;
+  padding: 5px 5px 14px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18), 0 1px 3px rgba(0,0,0,0.12);
+  transition: transform 0.3s ease;
+}
+.hero-collage .snap img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hero-collage .snap:hover {
+  transform: rotate(0deg) scale(1.05);
+  z-index: 20;
+}
+/* Desktop scatter — 8 snaps */
+.hero-collage .s1 { top: 10px; left: 20px; width: 140px; height: 105px; transform: rotate(-7deg); z-index: 3; }
+.hero-collage .s2 { top: 30px; left: 190px; width: 135px; height: 105px; transform: rotate(6deg); z-index: 5; }
+.hero-collage .s3 { top: 130px; left: 70px; width: 150px; height: 115px; transform: rotate(-3deg); z-index: 6; }
+.hero-collage .s4 { top: 150px; left: 240px; width: 130px; height: 100px; transform: rotate(8deg); z-index: 4; }
+.hero-collage .s5 { top: 260px; left: 20px; width: 125px; height: 95px; transform: rotate(5deg); z-index: 3; }
+.hero-collage .s6 { top: 275px; left: 165px; width: 130px; height: 130px; transform: rotate(-6deg); z-index: 5; }
+.hero-collage .s7 { top: 300px; left: 305px; width: 110px; height: 85px; transform: rotate(4deg); z-index: 2; }
+.hero-collage .s8 { top: 40px; left: 350px; width: 100px; height: 80px; transform: rotate(-10deg); z-index: 1; }
+
+/* Mobile scatter */
+@media (max-width: 900px) {
+  .hero-collage { height: 260px; max-width: 100%; margin: 20px auto 0; }
+  .hero-collage .s1 { top: 10px; left: 5%; width: 26%; height: 78px; transform: rotate(-6deg); }
+  .hero-collage .s2 { top: 25px; left: 34%; width: 28%; height: 82px; transform: rotate(5deg); }
+  .hero-collage .s3 { top: 15px; left: 65%; width: 25%; height: 78px; transform: rotate(-4deg); }
+  .hero-collage .s4 { top: 110px; left: 8%; width: 27%; height: 82px; transform: rotate(7deg); }
+  .hero-collage .s5 { top: 125px; left: 38%; width: 28%; height: 85px; transform: rotate(-5deg); }
+  .hero-collage .s6 { top: 130px; left: 68%; width: 24%; height: 78px; transform: rotate(6deg); }
+  .hero-collage .s7 { display: none; }
+  .hero-collage .s8 { display: none; }
+}
