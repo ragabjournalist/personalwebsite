@@ -316,7 +316,7 @@ async def admin_translate(request: Request, user: str = Depends(require_admin)):
     try:
         client = Anthropic()
         msg = client.messages.create(
-            model="claude_sonnet_4_6",
+            model="claude-sonnet-4-6",
             max_tokens=16000,
             system=system_prompt,
             messages=[{"role": "user", "content": user_payload}],
